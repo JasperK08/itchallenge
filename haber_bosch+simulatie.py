@@ -1,65 +1,33 @@
-# haber_bosch_simulatie.py
-
-class HaberBoschSimulation:
-    THEORETISCHE_HOEVEELHEID = 1500  # ton
-    GEMIDDELDE_OPBRENGST = 1200  # ton
-    VARIABELE_KOSTEN_PER_TON = 800  # € per ton
-    VASTE_KOSTEN = 40000  # €
-    
-    # Min en Max waarden
-    MIN_DRUK = 100  # atm
-    MAX_DRUK = 1000  # atm
-    MIN_TEMPERATUUR = 200  # °C
-    MAX_TEMPERATUUR = 600  # °C
-    MIN_stroomsnelheid = 10600  # m³/u
-    MAX_stroomsnelheid = 16600  # m³/u
-    MIN_ZUIVERING = 0  # %
-    MAX_ZUIVERING = 100  # %
-    MIN_KOELING = -150  # °C
-    MAX_KOELING = 90  # °C
-
-    def __init__(self, druk, temperatuur, stroomsnelheid, zuivering, koeling):
-        # Validatie van de invoerwaarden
-        if not (self.MIN_DRUK <= druk <= self.MAX_DRUK):
-            raise ValueError(f"Druk moet tussen {self.MIN_DRUK} en {self.MAX_DRUK} atm liggen.")
-        if not (self.MIN_TEMPERATUUR <= temperatuur <= self.MAX_TEMPERATUUR):
-            raise ValueError(f"Temperatuur moet tussen {self.MIN_TEMPERATUUR} en {self.MAX_TEMPERATUUR} °C liggen.")
-        if not (self.MIN_stroomsnelheid <= stroomsnelheid <= self.MAX_stroomsnelheid):
-            raise ValueError(f"Stroomsnelheid moet tussen {self.MIN_stroomsnelheid} en {self.MAX_stroomsnelheid} m³/u liggen.")
-        if not (self.MIN_ZUIVERING <= zuivering <= self.MAX_ZUIVERING):
-            raise ValueError(f"Zuivering moet tussen {self.MIN_ZUIVERING} en {self.MAX_ZUIVERING} % liggen.")
-        if not (self.MIN_KOELING <= koeling <= self.MAX_KOELING):
-            raise ValueError(f"Koeling moet tussen {self.MIN_KOELING} en {self.MAX_KOELING} °C liggen.")
-        
-        self.druk = druk  # atm
-        self.temperatuur = temperatuur  # °C
-        self.stroomsnelheid = stroomsnelheid  # m³/u
-        self.zuivering = zuivering  # %
-        self.koeling = koeling  # °C
-
-def bereken_opbrengst(druk, temperatuur, stroomsnelheid, zuivering, koeling, ):
+def bereken_opbrengst(druk, temperatuur, stroomsnelheid, zuivering, koeling, katalysator):
     """
     Bereken de opbrengst, omzet, kosten en winst van ammoniakproductie op basis van parameters.
     """
-    # Parameters    
-    theoretisch = 1500  # Theoretische hoeveelheid ammoniak in ton
-    variabele_kosten_per_ton = 170  # Variabele kosten per ton (€)
-    vaste_kosten = 60000  # Vaste kosten (€)
-    marktprijs_per_ton = 350  # Marktprijs van ammoniak per ton (€)
+    # Basisparameters
+    basis_opbrengst = 1400  # ton ammoniak onder ideale omstandigheden
+    variabele_kosten_per_ton = 160  # € per ton
+    vaste_kosten = 50000  # €
+    marktprijs_per_ton = 210  # €
 
-    # Afwijkingen berekenen
-    afwijking_druk = abs((200 - druk) / 200) * 0.1
-    afwijking_temp = abs((450 - temperatuur) / 450) * 0.1
-    afwijking_stroomsnelheid = abs((16000 - stroomsnelheid) / 16000) * 0.1
-    afwijking_zuivering = abs((25 - zuivering) / 25) * 0.1
-    afwijking_koeling = abs((20 - koeling) / 20 ) * 0.06
-    
+    # Effect van katalysator
+    if katalysator == "verbeterd":
+        vaste_kosten += 20000
+        marktprijs_per_ton *= 1.03
+    elif katalysator == "erg goed":
+        vaste_kosten += 30000
+        marktprijs_per_ton *= 1.06
 
-    # Totale afwijking berekenen
-    totale_afwijking = 1 - (afwijking_druk + afwijking_temp + afwijking_stroomsnelheid + afwijking_zuivering + afwijking_koeling)
+    # Efficiëntiefactoren berekenen
+    druk_factor = 1 - abs((250 - druk) / 250) * 0.12
+    temp_factor = 1 - abs((425 - temperatuur) / 425) * 0.15
+    stroom_factor = 1 - abs((15500 - stroomsnelheid) / 15500) * 0.10
+    zuivering_factor = 1 + (zuivering - 25) / 100 * 0.08
+    koeling_factor = 1 - abs((10 - koeling) / 100) * 0.07
 
-    # Werkelijke opbrengst berekenen (met 25% reductie)
-    werkelijke_opbrengst = max(0, totale_afwijking * theoretisch * 0.75)
+    # Totale efficiëntie
+    totale_efficiëntie = max(0, druk_factor * temp_factor * stroom_factor * zuivering_factor * koeling_factor)
+
+    # Werkelijke opbrengst berekenen
+    werkelijke_opbrengst = max(0, basis_opbrengst * totale_efficiëntie)
 
     # Kosten berekenen
     variabele_kosten = werkelijke_opbrengst * variabele_kosten_per_ton
@@ -71,80 +39,80 @@ def bereken_opbrengst(druk, temperatuur, stroomsnelheid, zuivering, koeling, ):
     # Winst berekenen
     winst = omzet - totale_kosten
 
-    # Resultaat in duizenden euro's
     return {
         "opbrengst_ton": werkelijke_opbrengst,
         "omzet": omzet / 1000,  # Omzet in duizenden euro's
         "totale_kosten": totale_kosten / 1000,  # Totale kosten in duizenden euro's
         "winst": winst / 1000  # Winst in duizenden euro's
     }
+class HaberBoschSimulatie:
+    # Constante waarden voor berekeningen
+    BASIS_OPBRENGST = 1400  # ton ammoniak onder ideale omstandigheden
+    VARIABELE_KOSTEN_PER_TON = 160  # € per ton
+    VASTE_KOSTEN = 50000  # € 
+    MARKTPRIJS_PER_TON = 210  # €
 
+    # Parametergrenzen
+    PARAMETER_LIMITS = {
+        "druk": (100, 1000),  # atm
+        "temperatuur": (200, 600),  # °C
+        "stroomsnelheid": (10600, 16600),  # m³/u
+        "zuivering": (0, 100),  # %
+        "koeling": (-150, 90),  # °C
+    }
 
+    def __init__(self, druk, temperatuur, stroomsnelheid, zuivering, koeling, katalysator):
+        self.druk = self.valideer_parameter("druk", druk)
+        self.temperatuur = self.valideer_parameter("temperatuur", temperatuur)
+        self.stroomsnelheid = self.valideer_parameter("stroomsnelheid", stroomsnelheid)
+        self.zuivering = self.valideer_parameter("zuivering", zuivering)
+        self.koeling = self.valideer_parameter("koeling", koeling)
+        self.katalysator = katalysator.lower() if katalysator in ["normaal", "verbeterd", "erg goed"] else "normaal"
 
-    def bereken_kwaliteit(self):
-        # Basiswaarden voor ideale omstandigheden
-        optimale_temperatuur = 450  # °C
-        optimale_druk = 200  # atm
-        optimale_stroomsnelheid = 16000  # m³/u
+    def valideer_parameter(self, naam, waarde):
+        min_w, max_w = self.PARAMETER_LIMITS[naam]
+        if not (min_w <= waarde <= max_w):
+            raise ValueError(f"{naam.capitalize()} moet tussen {min_w} en {max_w} liggen.")
+        return waarde
 
-        # Bereken afwijkingen van optimale waarden
-        temperatuur_afwijking = abs(self.temperatuur - optimale_temperatuur) / optimale_temperatuur
-        druk_afwijking = abs(self.druk - optimale_druk) / optimale_druk
-        stroomsnelheid_afwijking = abs(self.stroomsnelheid - optimale_stroomsnelheid) / optimale_stroomsnelheid
+    def bereken_efficiëntie(self):
+        # Factoren berekenen op basis van afwijking van optimale waarden
+        factoren = {
+            "druk": 1 - abs((250 - self.druk) / 250) * 0.12,
+            "temperatuur": 1 - abs((425 - self.temperatuur) / 425) * 0.15,
+            "stroomsnelheid": 1 - abs((15500 - self.stroomsnelheid) / 15500) * 0.10,
+            "zuivering": 1 + (self.zuivering - 25) / 100 * 0.08,
+            "koeling": 1 - abs((10 - self.koeling) / 100) * 0.07,
+        }
+        efficiëntie = max(0, factoren["druk"] * factoren["temperatuur"] * factoren["stroomsnelheid"] * factoren["zuivering"] * factoren["koeling"])
+        
+        # Effect van katalysator
+        katalysator_factoren = {"normaal": 1, "verbeterd": 1.03, "erg goed": 1.06}
+        efficiëntie *= katalysator_factoren[self.katalysator]
+        
+        return efficiëntie
 
-        # Bereken totale afwijking (in percentage)
-        totale_afwijking = (temperatuur_afwijking + druk_afwijking + stroomsnelheid_afwijking) / 3
-        
-        return totale_afwijking
+    def bereken_resultaten(self):
+        efficiëntie = self.bereken_efficiëntie()
+        opbrengst = max(0, self.BASIS_OPBRENGST * efficiëntie)
+        variabele_kosten = opbrengst * self.VARIABELE_KOSTEN_PER_TON
+        totale_kosten = self.VASTE_KOSTEN + variabele_kosten
+        omzet = opbrengst * self.MARKTPRIJS_PER_TON
+        winst = omzet - totale_kosten
 
-    def resultaten(self):
-        # Berekeningen
-        afwijking_factor = self.bereken_kwaliteit() * 0.1  # Effect van afwijking op opbrengst
-
-        # Bereken de werkelijke opbrengst (in ton)
-        werkelijke_opbrengst = self.GEMIDDELDE_OPBRENGST * (1 - afwijking_factor)
-        
-        # Bereken de yield als percentage van de theoretische hoeveelheid
-        opbrengst_percentage = (werkelijke_opbrengst / self.THEORETISCHE_HOEVEELHEID) * 100
-        
-        # Variabele kosten op basis van geproduceerde ammoniak
-        variabele_kosten = werkelijke_opbrengst * self.VARIABELE_KOSTEN_PER_TON
-        
-        # Totale kosten
-        totale_kosten = variabele_kosten + self.VASTE_KOSTEN
-        
-        # Totale opbrengst
-        marktprijs_per_ton = 300  # Voorbeeld marktprijs per ton NH3 in €
-        totale_opbrengst = werkelijke_opbrengst * marktprijs_per_ton
-        
-        # Winst
-        winst = totale_opbrengst - totale_kosten
-        
         return {
-            "Werkelijke opbrengst (ton NH3)": werkelijke_opbrengst,
-            "Opbrengst als percentage van theoretische hoeveelheid (%)": opbrengst_percentage,
-            "Variabele kosten (€)": variabele_kosten,
-            "Vaste kosten (€)": self.VASTE_KOSTEN,
-            "Totale kosten (€)": totale_kosten,
-            "Marktprijs NH3 (€)": marktprijs_per_ton,
-            "Totale opbrengst (€)": totale_opbrengst,
-            "Winst (€)": winst,
+            "opbrengst_ton": opbrengst,
+            "omzet_duizend": omzet / 1000,
+            "totale_kosten_duizend": totale_kosten / 1000,
+            "winst_duizend": winst / 1000,
         }
 
-# Voorbeeld van het aanroepen van de simulatie
+# Testcode voor directe uitvoering
 if __name__ == "__main__":
-    # Voorbeeldparameters
-    druk = 200  # atm
-    temperatuur = 450  # °C
-    stroomsnelheid = 16000  # m³/u
-    zuivering = 25  # %
-    koeling = 25  # °C
-
     try:
-        simulatie = HaberBoschSimulation(druk, temperatuur, stroomsnelheid, zuivering, koeling)
-        resultaten = simulatie.resultaten()
-
+        simulatie = HaberBoschSimulatie(250, 425, 15500, 25, 10, "verbeterd")
+        resultaten = simulatie.bereken_resultaten()
         for key, value in resultaten.items():
             print(f"{key}: {value:.2f}")
     except ValueError as e:
-        print(e)
+        print(f"Fout: {e}")
