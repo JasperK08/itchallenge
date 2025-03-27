@@ -8,6 +8,13 @@ class HaberBoschApp:
         self.root.title("Haber-Bosch Simulatie")
         self.root.geometry("600x500")
         self.root.resizable(False, False)
+        
+        # Huidige dag
+        self.dag = 1
+
+        # Daglabel linksboven
+        self.dag_label = ttk.Label(root, text=f"📅 Dag {self.dag}", font=("Arial", 12, "bold"), foreground="black")
+        self.dag_label.place(x=10, y=10)
 
         # Titel label
         ttk.Label(root, text="🌿 Haber-Bosch Simulatie 🌿", font=("Arial", 14, "bold")).pack(pady=10)
@@ -25,7 +32,7 @@ class HaberBoschApp:
             "Koeling (°C)"
         ]
         self.limieten = [
-            (100, 1000, 200),  # (min, max, default)
+            (100, 1000, 200),  
             (200, 600, 450),
             (10600, 16600, 16000),
             (0, 100, 25),
@@ -60,6 +67,30 @@ class HaberBoschApp:
         """Update het label bij de slider om de huidige waarde weer te geven."""
         self.values[index].config(text=f"{float(value):.0f}")
 
+    def animate_dag(self):
+        """Vervaag de dagtekst en laat hem weer verschijnen met een fade-in/fade-out effect."""
+        def fade_out(opacity=1.0):
+            """Laat de tekst vervagen."""
+            if opacity > 0:
+                new_color = f"gray{int(opacity * 100)}"
+                self.dag_label.config(foreground=new_color)
+                self.root.after(50, fade_out, opacity - 0.1)
+            else:
+                self.dag += 1
+                self.dag_label.config(text=f"📅 Dag {self.dag}")
+                fade_in(0.0)
+
+        def fade_in(opacity=0.0):
+            """Laat de tekst weer verschijnen."""
+            if opacity < 1.0:
+                new_color = f"gray{int(opacity * 100)}"
+                self.dag_label.config(foreground=new_color)
+                self.root.after(50, fade_in, opacity + 0.1)
+            else:
+                self.dag_label.config(foreground="black")
+
+        fade_out()
+
     def bereken(self):
         try:
             # Invoer verzamelen van sliders
@@ -83,12 +114,11 @@ class HaberBoschApp:
             """
             
             # Kleur afhankelijk van winst of verlies
-            if winst < 0:
-                kleur = "red"
-            else:
-                kleur = "green"
-
+            kleur = "red" if winst < 0 else "green"
             self.resultaat_label.config(text=resultaat_tekst, foreground=kleur)
+
+            # Dagnummer ophogen en animeren
+            self.animate_dag()
 
         except ValueError as e:
             messagebox.showerror("Foutmelding", str(e))
@@ -97,4 +127,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = HaberBoschApp(root)
     root.mainloop()
-
