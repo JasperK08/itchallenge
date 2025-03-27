@@ -16,35 +16,9 @@ def bereken_opbrengst(druk, temperatuur, stroomsnelheid, zuivering, koeling, kat
         vaste_kosten += 30000
         marktprijs_per_ton *= 1.06
 
-    # Efficiëntiefactoren berekenen
-    druk_factor = 1 - abs((250 - druk) / 250) * 0.12
-    temp_factor = 1 - abs((425 - temperatuur) / 425) * 0.15
-    stroom_factor = 1 - abs((15500 - stroomsnelheid) / 15500) * 0.10
-    zuivering_factor = 1 + (zuivering - 25) / 100 * 0.08
-    koeling_factor = 1 - abs((10 - koeling) / 100) * 0.07
+   
 
-    # Totale efficiëntie
-    totale_efficiëntie = max(0, druk_factor * temp_factor * stroom_factor * zuivering_factor * koeling_factor)
-
-    # Werkelijke opbrengst berekenen
-    werkelijke_opbrengst = max(0, basis_opbrengst * totale_efficiëntie)
-
-    # Kosten berekenen
-    variabele_kosten = werkelijke_opbrengst * variabele_kosten_per_ton
-    totale_kosten = vaste_kosten + variabele_kosten
-
-    # Omzet berekenen
-    omzet = werkelijke_opbrengst * marktprijs_per_ton
-
-    # Winst berekenen
-    winst = omzet - totale_kosten
-
-    return {
-        "opbrengst_ton": werkelijke_opbrengst,
-        "omzet": omzet / 1000,  # Omzet in duizenden euro's
-        "totale_kosten": totale_kosten / 1000,  # Totale kosten in duizenden euro's
-        "winst": winst / 1000  # Winst in duizenden euro's
-    }
+   
 class HaberBoschSimulatie:
     # Constante waarden voor berekeningen
     BASIS_OPBRENGST = 1400  # ton ammoniak onder ideale omstandigheden
@@ -78,11 +52,11 @@ class HaberBoschSimulatie:
     def bereken_efficiëntie(self):
         # Factoren berekenen op basis van afwijking van optimale waarden
         factoren = {
-            "druk": 1 - abs((250 - self.druk) / 250) * 0.12,
-            "temperatuur": 1 - abs((425 - self.temperatuur) / 425) * 0.15,
-            "stroomsnelheid": 1 - abs((15500 - self.stroomsnelheid) / 15500) * 0.10,
-            "zuivering": 1 + (self.zuivering - 25) / 100 * 0.08,
-            "koeling": 1 - abs((10 - self.koeling) / 100) * 0.07,
+            "druk": 1 - abs((250 - self.druk) / 250) * 0.03,
+            "temperatuur": 1 - abs((425 - self.temperatuur) / 425) * 0.2,
+            "stroomsnelheid": 1 - abs((15500 - self.stroomsnelheid) / 15500) * 0.2,
+            "zuivering": 1 + (self.zuivering - 25) / 100 * 0.2,
+            "koeling": 1 - abs((10 - self.koeling) / 100) * 0.2,
         }
         efficiëntie = max(0, factoren["druk"] * factoren["temperatuur"] * factoren["stroomsnelheid"] * factoren["zuivering"] * factoren["koeling"])
         
