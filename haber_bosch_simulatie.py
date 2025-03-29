@@ -1,4 +1,4 @@
-def bereken_opbrengst(druk, temperatuur, stroomsnelheid, zuivering, koeling, katalysator):
+def bereken_opbrengst(druk, temperatuur, stroomsnelheid, spui, koeling, katalysator):
     """
     Bereken de opbrengst, omzet, kosten en winst van ammoniakproductie op basis van parameters.
     """
@@ -31,15 +31,15 @@ class HaberBoschSimulatie:
         "druk": (100, 1000),  # atm
         "temperatuur": (200, 600),  # °C
         "stroomsnelheid": (10600, 16600),  # m³/u
-        "zuivering": (0, 100),  # %
+        "spui": (1, 20),  # %
         "koeling": (-150, 90),  # °C
     }
 
-    def __init__(self, druk, temperatuur, stroomsnelheid, zuivering, koeling, katalysator):
+    def __init__(self, druk, temperatuur, stroomsnelheid, spui, koeling, katalysator):
         self.druk = self.valideer_parameter("druk", druk)
         self.temperatuur = self.valideer_parameter("temperatuur", temperatuur)
         self.stroomsnelheid = self.valideer_parameter("stroomsnelheid", stroomsnelheid)
-        self.zuivering = self.valideer_parameter("zuivering", zuivering)
+        self.spui = self.valideer_parameter("spui", spui)
         self.koeling = self.valideer_parameter("koeling", koeling)
         self.katalysator = katalysator.lower() if katalysator in ["normaal", "verbeterd", "erg goed"] else "normaal"
 
@@ -52,13 +52,13 @@ class HaberBoschSimulatie:
     def bereken_efficiëntie(self):
         # Factoren berekenen op basis van afwijking van optimale waarden
         factoren = {
-            "druk": 1 - abs((250 - self.druk) / 250) * 0.03,
-            "temperatuur": 1 - abs((425 - self.temperatuur) / 425) * 0.2,
-            "stroomsnelheid": 1 - abs((15500 - self.stroomsnelheid) / 15500) * 0.2,
-            "zuivering": 1 + (self.zuivering - 25) / 100 * 0.2,
-            "koeling": 1 - abs((10 - self.koeling) / 100) * 0.2,
+            "druk": 1 - abs((250 - self.druk) / 250) * 0.15,
+            "temperatuur": 1 - abs((425 - self.temperatuur) / 425) * 0.15,
+            "stroomsnelheid": 1 - abs((15500 - self.stroomsnelheid) / 15500) * 0.15,
+            "spui": 1 - (self.spui - 3) / 20 * 0.15,
+            "koeling": 1 - abs((10 - self.koeling) / 100) * 0.15,
         }
-        efficiëntie = max(0, factoren["druk"] * factoren["temperatuur"] * factoren["stroomsnelheid"] * factoren["zuivering"] * factoren["koeling"])
+        efficiëntie = max(0, factoren["druk"] * factoren["temperatuur"] * factoren["stroomsnelheid"] * factoren["spui"] * factoren["koeling"])
         
         # Effect van katalysator
         katalysator_factoren = {"normaal": 1, "verbeterd": 1.03, "erg goed": 1.06}
@@ -84,7 +84,7 @@ class HaberBoschSimulatie:
 # Testcode voor directe uitvoering
 if __name__ == "__main__":
     try:
-        simulatie = HaberBoschSimulatie(250, 425, 15500, 25, 10, "verbeterd")
+        simulatie = HaberBoschSimulatie(250, 425, 15500, 3, 10, "verbeterd")
         resultaten = simulatie.bereken_resultaten()
         for key, value in resultaten.items():
             print(f"{key}: {value:.2f}")
