@@ -52,7 +52,7 @@ class HaberBoschSimulatie:
     def bereken_efficiëntie(self):
         # Factoren berekenen op basis van afwijking van optimale waarden
         factoren = {
-            "druk": 1 - abs((250 - self.druk) / 250) * 0.15,
+            "druk": 1 - abs((250 - self.druk) / 250) * 0.1,
             "temperatuur": 1 - abs((425 - self.temperatuur) / 425) * 0.15,
             "stroomsnelheid": 1 - abs((15500 - self.stroomsnelheid) / 15500) * 0.15,
             "spui": 1 - (self.spui - 3) / 20 * 0.15,
