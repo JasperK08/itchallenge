@@ -22,13 +22,13 @@ class HaberBoschApp:
         self.root.geometry("1920x1080")  
         self.root.resizable(False, False)
 
-        # 🎨 **Stijlen**
+        # Stijlen
         style = ttk.Style()
         style.configure("Rounded.TButton", font=("Arial", 14), padding=10, relief="flat")
         style.configure("Rounded.TFrame", borderwidth=5, relief="ridge")
         style.configure("TLabel", font=("Arial", 14), background="white", padding=5)
 
-        # 🖼️ **Achtergrondafbeelding**
+        # Achtergrondafbeelding
         self.background_image = Image.open("new-logo.png")  
         self.background_image = self.background_image.resize((1920, 1080), Image.LANCZOS)
         self.bg_photo = ImageTk.PhotoImage(self.background_image)
@@ -36,7 +36,7 @@ class HaberBoschApp:
         self.bg_label = ttk.Label(root, image=self.bg_photo)
         self.bg_label.place(x=0, y=0, relwidth=1, relheight=1)  
 
-        # 📽️ **GIF laden**
+        # GIF laden
         self.gif_frames = []
         self.current_frame = 0
         self.load_gif("haberbosch.gif")
@@ -46,19 +46,19 @@ class HaberBoschApp:
         self.gif_label.place(relx=0.85, rely=0.2, anchor="center")  
         self.gif_label.lower()  
 
-        # 🗓️ **Dagweergave**
+        # Dagweergave
         self.dag = 1
         self.dag_label = ttk.Label(root, text=f"📅 Dag {self.dag}", font=("Arial", 16, "bold"), foreground="black", background="white", padding=10)
         self.dag_label.place(x=20, y=20)
 
-        # 🌿 **Titel**
+        # Titel
         ttk.Label(root, text="🌿 Haber-Bosch Simulatie 🌿", font=("Arial", 24, "bold"), background="white").pack(pady=20)
 
-        # 🎛️ **Frame voor sliders**
+        #  Frame voor sliders
         self.frame = RoundedFrame(root, style="Rounded.TFrame")
         self.frame.place(relx=0.5, rely=0.35, anchor="center")  
 
-        # **Sliders + Waarden**
+        # Sliders + Waarden
         self.labels = ["Druk (atm)", "Temperatuur (°C)", "Stroomsnelheid (m³/u)", "Spui (%)", "Koeling (°C)"]
         self.limieten = [(100, 1000, 200), (200, 600, 450), (10600, 16600, 16000), (1, 20, 10), (-150, 90, 20)]
         self.sliders = []
@@ -82,7 +82,7 @@ class HaberBoschApp:
             self.sliders.append(slider)
             self.values.append(value_var)
 
-        # 🏁 **Knoppen**
+        # Knoppen
         button_frame = ttk.Frame(root)
         button_frame.place(relx=0.5, rely=0.5, anchor="center")  
 
@@ -92,7 +92,7 @@ class HaberBoschApp:
         reset_button = RoundedButton(button_frame, text="Reset", command=self.reset)
         reset_button.grid(row=0, column=1, padx=10)
 
-        # 📘 **Uitleg links in beeld**
+        # Uitleg links in beeld
         uitleg_tekst = """Welkom bij de Haber-Bosch simulatie! 🎉
 
         🔹 Gebruik de sliders in het midden om instellingen aan te passen.
@@ -120,7 +120,7 @@ class HaberBoschApp:
         )
         self.uitleg_label.place(x=20, y=400)
 
-        # 📊 **Resultaten & gemiddelden naast elkaar**
+        # Resultaten & gemiddelden naast elkaar
         self.result_frame = RoundedFrame(root, style="Rounded.TFrame")
         self.result_frame.place(relx=0.5, rely=0.62, anchor="center")  
 
@@ -130,11 +130,11 @@ class HaberBoschApp:
         self.stats_label = ttk.Label(self.result_frame, text="", font=("Arial", 16), justify="left", background="white")
         self.stats_label.grid(row=0, column=1, padx=20)
 
-        # 📈 **Voortgangsbalk**
+        # Voortgangsbalk
         self.progress_bar = ttk.Progressbar(root, mode='determinate', length=800)
         self.progress_bar.place(relx=0.5, rely=0.75, anchor="center")  
 
-        # 📊 **Opslag voor winstcijfers**
+        # Opslag voor winstcijfers
         self.profits = []
 
     def load_gif(self, filepath):
@@ -152,9 +152,9 @@ class HaberBoschApp:
         if self.current_frame < len(self.gif_frames):
             self.gif_label.configure(image=self.gif_frames[self.current_frame])
             self.current_frame += 1
-            self.root.after(50, self.play_gif)  # Volgende frame na 50ms
+            self.root.after(50, self.play_gif)  
         else:
-            self.gif_label.lower()  # Verberg de GIF na afloop
+            self.gif_label.lower()  
 
     def update_label(self, value, index, value_var):
         """Update de waarde van de slider."""
@@ -167,7 +167,7 @@ class HaberBoschApp:
         self.resultaat_label.config(text="🔄 Bezig met berekenen...")
         self.current_frame = 0  
         self.gif_label.lift()  
-        self.play_gif()  # Start de GIF
+        self.play_gif()  
         self.root.after(100, self.bereken)  
 
     def bereken(self):
