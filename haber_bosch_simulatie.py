@@ -2,19 +2,6 @@ def bereken_opbrengst(druk, temperatuur, stroomsnelheid, spui, koeling, katalysa
     """
     Bereken de opbrengst, omzet, kosten en winst van ammoniakproductie op basis van parameters.
     """
-    # Basisparameters
-    basis_opbrengst = 1400  # ton ammoniak onder ideale omstandigheden
-    variabele_kosten_per_ton = 160  # € per ton
-    vaste_kosten = 50000  # €
-    marktprijs_per_ton = 210  # €
-
-    # Effect van katalysator
-    if katalysator == "verbeterd":
-        vaste_kosten += 20000
-        marktprijs_per_ton *= 1.03
-    elif katalysator == "erg goed":
-        vaste_kosten += 30000
-        marktprijs_per_ton *= 1.06
 
    
 
